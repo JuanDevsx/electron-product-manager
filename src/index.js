@@ -13,7 +13,12 @@ if(process.env.NODE_ENV !== 'production'){
 let mainWindow
 let newProductWindow
 app.on('ready', () => {
-   mainWindow = new BrowserWindow({})
+   mainWindow = new BrowserWindow({
+    webPreferences:{
+        nodeIntegration: true,
+        contextIsolation:false
+    }
+   })
    mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'views/index.html'),
         protocol: 'file',
@@ -21,6 +26,10 @@ app.on('ready', () => {
    }))
    const mainMenu = Menu.buildFromTemplate(TemplateMenu)
    Menu.setApplicationMenu(mainMenu)
+
+   mainWindow.on('closed', () => {
+    app.quit();
+   })
 });
    function createNewProductWindow(){
     newProductWindow = new BrowserWindow({
@@ -33,7 +42,10 @@ app.on('ready', () => {
                 pathname: path.join(__dirname, 'views/new-product.html'),
                 protocol: 'file',
                 slashes: true
-        }))
+    }))
+    newProductWindow.on('closed', ()=>{
+         newProductWindow = null;
+    });
 
    }
 
@@ -49,8 +61,44 @@ const TemplateMenu = [
                 click(){
                     createNewProductWindow();
                 }
+            },
+                    {
+                label:'Remove All Products',
+                click(){
+                    
+                }
+            },
+            {
+                label:'Exit',
+                accelerator: process.plataform == 'darwin'?'command+q':'Ctrl+Q',
+                click(){
+                    app.quit();
+                }
             }
         ]
 
-    }
-]
+    },
+    
+];
+if(process.plataform === 'darwin'){
+    TemplateMenu.unshift({
+        label: app.getName()
+    });
+}
+
+if (process.env.NODE_ENV !== 'production'){
+    TemplateMenu.push({
+        label: 'DevTools',
+        submenu:[
+            {
+                label: 'Show/Hide DevTools',
+                click(item, focusedWindow){
+                    focusedWindow.toggleDevTools();
+                }
+            },{
+               role:'reload' 
+            }
+        ]
+    })
+} 
+    
