@@ -1,7 +1,7 @@
 const {app, BrowserWindow} = require ('electron');
 const  url = require('url');
 const path = require('path');
-const { Menu } = require('electron/main');
+const { Menu, ipcMain } = require('electron/main');
 
 if(process.env.NODE_ENV !== 'production'){
     require ('electron-reload')(__dirname,{
@@ -15,6 +15,7 @@ let newProductWindow
 app.on('ready', () => {
    mainWindow = new BrowserWindow({
     webPreferences:{
+        
         nodeIntegration: true,
         contextIsolation:false
     }
@@ -35,9 +36,13 @@ app.on('ready', () => {
     newProductWindow = new BrowserWindow({
             width: 400,
             height: 330,
-            title: 'Add a new product'
+            title: 'Add a new product',
+            webPreferences:{
+                nodeIntegration:true,
+                contextIsolation:false
+            }
         });
-    newProductWindow.setMenu(null);
+    // newProductWindow.setMenu(null);
     newProductWindow.loadURL(url.format({
                 pathname: path.join(__dirname, 'views/new-product.html'),
                 protocol: 'file',
@@ -49,7 +54,9 @@ app.on('ready', () => {
 
    }
 
-
+ipcMain.on('product:new',(e, newProduct)=>{
+    console.log(newProduct);
+})
 
 const TemplateMenu = [
     {
@@ -92,6 +99,7 @@ if (process.env.NODE_ENV !== 'production'){
         submenu:[
             {
                 label: 'Show/Hide DevTools',
+                acelerator:"Ctrl+D",
                 click(item, focusedWindow){
                     focusedWindow.toggleDevTools();
                 }
