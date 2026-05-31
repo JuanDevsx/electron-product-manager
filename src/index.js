@@ -55,8 +55,9 @@ app.on('ready', () => {
    }
 
 ipcMain.on('product:new',(e, newProduct)=>{
-    console.log(newProduct);
-})
+    mainWindow.webContents.send('product:new', newProduct)
+    newProductWindow.close();
+});
 
 const TemplateMenu = [
     {

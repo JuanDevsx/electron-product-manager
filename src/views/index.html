@@ -13,10 +13,38 @@
 
     </div>
     <script>
-        const electron = require('electron');
+        const {ipcRenderer} = require('electron');
 
         const products = document.querySelector('#products')
-        products.innerHTML = ''
+        
+        ipcRenderer.on('product:new',(e, newProduct)=>{
+            const newProductTemplate = `
+            <div class="col-md-4">
+                <div class="card h-100 shadow-lg border border-2">
+                    <div class="card-header bg-white border-bottom border-2 border py-3 text-center">
+                     <h5 class="card-title text-center m-0" style="text-transform:none;">
+                        ${newProduct.name}
+                        </h5>
+                    </div>
+                        <div class="card-header bg-white border-bottom border-2 border py-3 text-center">
+                        ${newProduct.description}
+                        </div> 
+                            <div class="card-header bg-white border-bottom border-2 border py-3 text-center">
+                                <h4 class="fw-bold text-center">
+                        ${newProduct.price}
+                                </h4>
+                            </div> 
+                            <div class="card-footer bg-white border-top border-2 border py-3 text-center">
+                        <button class="btn btn-danger btn-sm px-4">
+                            DELETE
+                            </button>
+                    </div>
+                </div>    
+            </div>        
+            `;
+            products.innerHTML+= newProductTemplate;
+        });
+        
         
     </script>
 </body>
