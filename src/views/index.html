@@ -43,8 +43,18 @@
             </div>        
             `;
             products.innerHTML+= newProductTemplate;
+            const btns = document.querySelectorAll('.btn.btn-danger');
+            btns.forEach(btn =>{
+                btn.addEventListener('click', e =>{
+                    e.target.parentElement.parentElement.parentElement.remove();
+                });
+            });
         });
         
+        ipcRenderer.on("products:remove-all", (e) =>{
+            console.log("Remove-all")
+            products.innerHTML='';
+        })
         
     </script>
 </body>
