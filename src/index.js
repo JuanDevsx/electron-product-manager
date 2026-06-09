@@ -2,7 +2,19 @@ const {app, BrowserWindow} = require ('electron');
 const  url = require('url');
 const path = require('path');
 const { Menu, ipcMain } = require('electron/main');
+// const createDatabase = require('./database/database')
+const{
+    createDatabase,
+    createCategory,
+    getCategories
+} = require('./database/database')
 
+// if (!app.isPackaged){
+//     require('electron-reload')(__dirname,{
+//         electron: path.join(__dirname,'..node_modules','bin','electron')
+//         });
+// }
+console.log('NODE_ENV =', process.env.NODE_ENV);
 if(process.env.NODE_ENV !== 'production'){
     require ('electron-reload')(__dirname,{
         electron: path.join(__dirname, '../node_modules', '.bin', 'electron')
@@ -10,9 +22,11 @@ if(process.env.NODE_ENV !== 'production'){
     })
 }
 
-let mainWindow
-let newProductWindow
+let mainWindow;
+let newProductWindow;
+let db;
 app.on('ready', () => {
+   db = createDatabase();
    mainWindow = new BrowserWindow({
     webPreferences:{
         
@@ -78,7 +92,7 @@ const TemplateMenu = [
             },
             {
                 label:'Exit',
-                accelerator: process.plataform == 'darwin'?'command+q':'Ctrl+Q',
+                accelerator: process.platform == 'darwin'?'command+q':'Ctrl+Q',
                 click(){
                     app.quit();
                 }
@@ -88,7 +102,7 @@ const TemplateMenu = [
     },
     
 ];
-if(process.plataform === 'darwin'){
+if(process.platform === 'darwin'){
     TemplateMenu.unshift({
         label: app.getName()
     });
