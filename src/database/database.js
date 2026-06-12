@@ -1,14 +1,14 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 const{ app } = require('electron');
-
+let db;
 function createDatabase(){
     const dbPath = path.join(
         app.getPath('userData'),
         'products.db'
     );
 
-    const db = new Database(dbPath)
+    db = new Database(dbPath)
     db.exec(`
     CREATE TABLE IF NOT EXISTS categories(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,7 +31,7 @@ return db;
 
 
 }
-module.exports = createDatabase;
+
 
 function createCategory(name){
     return db.prepare(`

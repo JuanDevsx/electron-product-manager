@@ -24,9 +24,11 @@ if(process.env.NODE_ENV !== 'production'){
 
 let mainWindow;
 let newProductWindow;
+let newCategoryWindow;
 let db;
 app.on('ready', () => {
    db = createDatabase();
+   console.log(getCategories());
    mainWindow = new BrowserWindow({
     webPreferences:{
         
@@ -46,6 +48,26 @@ app.on('ready', () => {
     app.quit();
    })
 });
+    function createNewCategory(){
+        newCategoryWindow = new BrowserWindow({
+            width:400,
+            height:300,
+            title:'Add a new category',
+            webPreferences:{
+                nodeIntegration:true,
+                contextIsolation:false
+            }
+        });
+        newCategoryWindow.loadURL(url.format({
+            pathname: path.join(__dirname,'views/new-category.html'),
+            protocol:'file',
+            slashes:true
+        }))
+        newCategoryWindow.on('closed',()=>{
+            newCategoryWindow= null;
+        });
+    }
+
    function createNewProductWindow(){
     newProductWindow = new BrowserWindow({
             width: 400,
@@ -72,6 +94,32 @@ ipcMain.on('product:new',(e, newProduct)=>{
     mainWindow.webContents.send('product:new', newProduct)
     newProductWindow.close();
 });
+ipcMain.handle('categories:get-all',()=>{
+    return getCategories();
+})
+ipcMain.on('product:new',(e, newProduct)=>{
+    mainWindow.webContents.send(
+        'product:new',
+        newProduct
+    );
+    newProductWindow.close();
+});
+
+ipcMain.on(
+    'category:open-window',
+    ()=>{
+        createNewCategory();
+    }
+);
+ipcMain.on(
+    'category:new',
+    (e, name)=>{
+        createCategory(name);
+        console.log(getCategories);
+
+        newCategoryWindow.close();
+    }
+);
 
 const TemplateMenu = [
     {
