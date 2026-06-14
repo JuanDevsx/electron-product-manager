@@ -46,8 +46,22 @@ function getCategories(){
         ORDER BY name
         `).all();
 }
+function createProduct(){
+    return db.prepare(`
+        INSERT INTO products(name,description,price,stock,category_id)
+        VALUES(?,?,?,?,?)
+        `).run(name,description,price,stock,category_id);
+}
+function getProducts(){
+    return db.prepare(`
+        SELECT *
+        FROM products
+        ORDER BY id `).all();
+}
 module.exports ={
     createDatabase,
     createCategory,
-    getCategories
+    getCategories,
+    createProduct,
+    getProducts
 };

@@ -6,6 +6,7 @@
     <title>Add a new product</title>
     <link rel="stylesheet" href="../../assets/css/bootstrap.css">
     <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <script src="../render/new-product.js"defer></script>
 </head>
 <body>
    <form class="p-4">
@@ -18,28 +19,14 @@
     <div class="mb-3">
         <input type="text" id="description" class="form-control" placeholder="Description">
     </div>
+    <div class="mb-3">
+        <select id="category" class="form-select">
+            <option value="">Select category</option>
+        </select>
+    </div>
     <button type="submit" class="btn btn-primary w-100">
         Save Product
     </button>
 </form>
-    <script>
-        const {ipcRenderer} = require('electron');
-
-        const form = document.querySelector('form');
-        form.addEventListener('submit', e =>{
-            const nameProduct = document.querySelector('#name').value;
-            const priceProduct = document.querySelector('#price').value;
-            const descProduct = document.querySelector('#description').value;
-            const newProduct={
-                name: nameProduct,
-                price: priceProduct,
-                description: descProduct
-            }
-
-            ipcRenderer.send('product:new', newProduct);
-            e.preventDefault();
-        });
-    </script> 
-    
 </body>
 </html>

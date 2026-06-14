@@ -1,13 +1,12 @@
 const {ipcRenderer} = require('electron');
     //    Variabbles
-        const products = document.querySelector('#products')
         const mainContent = document.querySelector('#main-content');
         const navProducts = document.querySelector("#nav-products");
         const navCategories = document.querySelector("#nav-categories");
         // Funciones de vista
         function showProductsView(){
             mainContent.innerHTML=`
-            <div class="d-flex justify-content-between aling-items-center mb-4">      
+            <div class="d-flex justify-content-between align-items-center mb-4">      
                 <h2>Products</h2>
                 <button class="btn btn-primary mb-3">
                     New product
@@ -17,6 +16,10 @@ const {ipcRenderer} = require('electron');
                 `;        
         }
         showProductsView()
+
+        function getProductContainer(){
+            return document.querySelector('#products');
+        }
 
          // Tempt function categories
         async function loadCategories(){
@@ -43,11 +46,35 @@ const {ipcRenderer} = require('electron');
             });
                 console.log(categories);
         }
+        
+        async function loadProducts(){
+            const products=
+            await ipcRenderer.invoke(
+                'products:get-all'
+            );
+            const container = 
+            document.querySelector(
+                "#products-container"
+            );
+            container.innerHTML ='';
+
+            products.forEach(product=>{
+                container.innerHTML +=`
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h4>Product</h4>
+                        <h5 class"m-0">
+                        ${product.name}
+                        </h5>
+                    </div>
+                </div>    
+                `
+            });
+        }
 
         function showCategoriesView(){
             mainContent.innerHTML =`
-            <div class="d-flex justify-content-between aling-items-center mb-4">
-            
+            <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>Categories</h2>
                 <button id="btn-new-category" class="btn btn-primary mb-3">
                     New category
@@ -64,17 +91,35 @@ const {ipcRenderer} = require('electron');
                 });
             loadCategories();
         }
+        function showProducts(){
+            mainContent.innerHTML =`
+            <div class="d-flex justify-content-between aling-items-center mb-4">
+                <h2>Products</h2>
+                <button id="btn-new-product" class="btn btn-primary mb-3">
+                    New product
+                </button>
+            </div>
+                <div id="products-container"></div>        
+            `;
+            document
+            .querySelector('#btn-new-product')
+            .addEventListener('click',()=>{
+                ipcRederer.send(
+                    'product:open-window'
+                );
+            });
+            loadProducts();
+        }
         // Eventos
         navProducts.addEventListener('click',(e)=>{
             e.preventDefault();
+            //vista
             showProductsView();
         });
         navCategories.addEventListener('click',(e)=>{
             e.preventDefault();
             showCategoriesView();
         });
-        // Vista inicial
-        showProductsView();
 
         ipcRenderer.on('product:new',(e, newProduct)=>{
             const newProductTemplate = `
@@ -101,7 +146,7 @@ const {ipcRenderer} = require('electron');
                 </div>    
             </div>        
             `;
-            products.innerHTML+= newProductTemplate;
+            getProductsContainer().innerHTML+= newProductTemplate;
             const btns = document.querySelectorAll('.btn.btn-danger');
             btns.forEach(btn =>{
                 btn.addEventListener('click', e =>{

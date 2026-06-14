@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Category</title>
+    <script src="../render/new-category.js">defer</script>
     <link rel="stylesheet" href="../../assets/css/bootstrap.css">
     <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
 </head>
@@ -28,30 +29,5 @@
         </button>
 
     </form>
-
-    <script>
-
-        const { ipcRenderer } = require('electron');
-
-        const form = document.querySelector('form');
-
-        form.addEventListener('submit', e => {
-
-            e.preventDefault();
-
-            const name =
-                document.querySelector(
-                    '#category-name'
-                ).value;
-
-            ipcRenderer.send(
-                'category:new',
-                name
-            );
-
-        });
-
-    </script>
-
 </body>
 </html>

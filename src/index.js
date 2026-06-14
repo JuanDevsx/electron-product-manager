@@ -6,7 +6,9 @@ const { Menu, ipcMain } = require('electron/main');
 const{
     createDatabase,
     createCategory,
-    getCategories
+    createProduct,
+    getCategories,
+    getProducts
 } = require('./database/database')
 
 // if (!app.isPackaged){
@@ -48,7 +50,26 @@ app.on('ready', () => {
     app.quit();
    })
 });
-    function createNewCategory(){
+app.on('ready', ()=>{
+    mainWindow = new BrowserWindow({
+     webPreferences:{
+        nodeIntegration: true,
+        contextIsolation:false
+     }   
+    })
+    mainWindow.loadURL(url.format({
+        pathname: path.join(__dirname, 'views/new-product.html'),
+        protocol:'file',
+        slashes: true
+    }))
+    const mainMenu = Menu.buildFromTemplate(TemplateMenu)
+    Menu.setApplicationMenu(mainMenu)
+
+    mainWindow.on('closed',()=>{
+        app.quit();
+    })
+});
+    function createNewCategoryWindow(){
         newCategoryWindow = new BrowserWindow({
             width:400,
             height:300,
@@ -78,7 +99,7 @@ app.on('ready', () => {
                 contextIsolation:false
             }
         });
-    // newProductWindow.setMenu(null);
+    
     newProductWindow.loadURL(url.format({
                 pathname: path.join(__dirname, 'views/new-product.html'),
                 protocol: 'file',
@@ -97,20 +118,25 @@ ipcMain.on('product:new',(e, newProduct)=>{
 ipcMain.handle('categories:get-all',()=>{
     return getCategories();
 })
-ipcMain.on('product:new',(e, newProduct)=>{
-    mainWindow.webContents.send(
-        'product:new',
-        newProduct
-    );
-    newProductWindow.close();
-});
+
+ipcMain.handle('products:get-all',()=>{
+    return getProducts();
+})
 
 ipcMain.on(
     'category:open-window',
     ()=>{
-        createNewCategory();
+        createNewCategoryWindow();
     }
 );
+
+ipcMain.on(
+    'product:open-window',
+    ()=>{
+        createNewProductWindow();
+    }
+)
+
 ipcMain.on(
     'category:new',
     (e, name)=>{
@@ -118,20 +144,27 @@ ipcMain.on(
         console.log(getCategories);
 
         newCategoryWindow.close();
-    }
+    }   
 );
+
+ipcMain.on(
+    'product:new',
+    (e, name,price,description)=>{
+        createProduct(name,price,description)
+        console.log(getProducts);
+
+        newProductWindow.close();
+    }
+)
+
+// ipcMain.handle('products:')
+
+
 
 const TemplateMenu = [
     {
         label:'file',
         submenu:[
-            {
-                label: 'New Product',
-                accelerator:'Ctrl+N',
-                click(){
-                    createNewProductWindow();
-                }
-            },
                     {
                 label:'Remove All Products',
                 click(){
