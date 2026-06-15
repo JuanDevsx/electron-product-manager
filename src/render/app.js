@@ -4,7 +4,7 @@ const {ipcRenderer} = require('electron');
         const navProducts = document.querySelector("#nav-products");
         const navCategories = document.querySelector("#nav-categories");
         // Funciones de vista
-        function showProductsView(){
+        function showNewProductsViewForm(){
             mainContent.innerHTML=`
             <div class="d-flex justify-content-between align-items-center mb-4">      
                 <h2>Products</h2>
@@ -15,7 +15,7 @@ const {ipcRenderer} = require('electron');
                 <div class="row" id="products"></div>
                 `;        
         }
-        showProductsView()
+        showNewProductsViewForm()
 
         function getProductContainer(){
             return document.querySelector('#products');
@@ -72,7 +72,7 @@ const {ipcRenderer} = require('electron');
             });
         }
 
-        function showCategoriesView(){
+        function showNewCategoriesViewForm(){
             mainContent.innerHTML =`
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>Categories</h2>
@@ -114,11 +114,11 @@ const {ipcRenderer} = require('electron');
         navProducts.addEventListener('click',(e)=>{
             e.preventDefault();
             //vista
-            showProductsView();
+            showNewProductsViewForm();
         });
         navCategories.addEventListener('click',(e)=>{
             e.preventDefault();
-            showCategoriesView();
+            showNewCategoriesViewForm();
         });
 
         ipcRenderer.on('product:new',(e, newProduct)=>{

@@ -1,4 +1,4 @@
-const {app, BrowserWindow} = require ('electron');
+const {app, BrowserWindow } = require ('electron');
 const  url = require('url');
 const path = require('path');
 const { Menu, ipcMain } = require('electron/main');
@@ -25,96 +25,41 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 let mainWindow;
-let newProductWindow;
-let newCategoryWindow;
 let db;
 app.on('ready', () => {
    db = createDatabase();
    console.log(getCategories());
-   mainWindow = new BrowserWindow({
+
+    mainWindow = new BrowserWindow({
     webPreferences:{
         
         nodeIntegration: true,
         contextIsolation:false
     }
    })
-   mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'views/index.html'),
-        protocol: 'file',
-        slashes: true
-   }))
-   const mainMenu = Menu.buildFromTemplate(TemplateMenu)
-   Menu.setApplicationMenu(mainMenu)
-
-   mainWindow.on('closed', () => {
-    app.quit();
-   })
+   //Pantalla inicio
+mainWindow.loadURL(url.format({
+    pathname: path.join(__dirname, 'views/index.html'),
+    protocol: 'file',
+    slashes:true
+}))
+const mainMenu = Menu.buildFromTemplate(TemplateMenu)
+Menu.setApplicationMenu(mainMenu)
+  
 });
 app.on('ready', ()=>{
-    mainWindow = new BrowserWindow({
+     ({
      webPreferences:{
         nodeIntegration: true,
         contextIsolation:false
      }   
     })
-    mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'views/new-product.html'),
-        protocol:'file',
-        slashes: true
-    }))
-    const mainMenu = Menu.buildFromTemplate(TemplateMenu)
-    Menu.setApplicationMenu(mainMenu)
-
-    mainWindow.on('closed',()=>{
-        app.quit();
-    })
+    console.log("APP READY")
 });
-    function createNewCategoryWindow(){
-        newCategoryWindow = new BrowserWindow({
-            width:400,
-            height:300,
-            title:'Add a new category',
-            webPreferences:{
-                nodeIntegration:true,
-                contextIsolation:false
-            }
-        });
-        newCategoryWindow.loadURL(url.format({
-            pathname: path.join(__dirname,'views/new-category.html'),
-            protocol:'file',
-            slashes:true
-        }))
-        newCategoryWindow.on('closed',()=>{
-            newCategoryWindow= null;
-        });
-    }
 
-   function createNewProductWindow(){
-    newProductWindow = new BrowserWindow({
-            width: 400,
-            height: 330,
-            title: 'Add a new product',
-            webPreferences:{
-                nodeIntegration:true,
-                contextIsolation:false
-            }
-        });
-    
-    newProductWindow.loadURL(url.format({
-                pathname: path.join(__dirname, 'views/new-product.html'),
-                protocol: 'file',
-                slashes: true
-    }))
-    newProductWindow.on('closed', ()=>{
-         newProductWindow = null;
-    });
 
-   }
-
-ipcMain.on('product:new',(e, newProduct)=>{
-    mainWindow.webContents.send('product:new', newProduct)
-    newProductWindow.close();
-});
+   
+   
 ipcMain.handle('categories:get-all',()=>{
     return getCategories();
 })
@@ -123,49 +68,18 @@ ipcMain.handle('products:get-all',()=>{
     return getProducts();
 })
 
-ipcMain.on(
-    'category:open-window',
-    ()=>{
-        createNewCategoryWindow();
-    }
-);
-
-ipcMain.on(
-    'product:open-window',
-    ()=>{
-        createNewProductWindow();
-    }
-)
-
-ipcMain.on(
-    'category:new',
-    (e, name)=>{
-        createCategory(name);
-        console.log(getCategories);
-
-        newCategoryWindow.close();
-    }   
-);
-
-ipcMain.on(
-    'product:new',
-    (e, name,price,description)=>{
-        createProduct(name,price,description)
-        console.log(getProducts);
-
-        newProductWindow.close();
-    }
-)
-
-// ipcMain.handle('products:')
-
-
-
 const TemplateMenu = [
     {
         label:'file',
         submenu:[
                     {
+                label: 'Show/Hide DevTools',
+                acelerator:"Ctrl+D",               
+                click(item, focusedWindow){
+                    focusedWindow.toggleDevTools();
+                }
+                    },
+                {
                 label:'Remove All Products',
                 click(){
                     mainWindow.webContents.send("products:remove-all")
@@ -177,7 +91,9 @@ const TemplateMenu = [
                 click(){
                     app.quit();
                 }
-            }
+            },
+            
+            
         ]
 
     },
