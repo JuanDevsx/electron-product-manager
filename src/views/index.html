@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products electron</title>
+    <script src="../../assets/js/bootstrap.bundle.min.js"defer></script>
     <script src="../../src/render/app.js"defer></script>
     <link rel="stylesheet" href="../../assets/css/side-bar.css">
     <link rel="stylesheet" href="../../assets/css/bootstrap.css">
-    <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
 </head>
 <body>
+
     <div class="d-flex">
         <div class="bg-dark text-white p-3 vh-100" id="sidebar">
             <h4>Inventory</h4>
@@ -37,9 +38,38 @@
         </div>
     </div>
 
+ 
+    <div id="categoryModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        New Category
+                    </h5>
 
-    <script>
-        
-    </script>
+                    <button type="button" 
+                    class="btn-close" 
+                    data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+                <div class="modal-body">
+                    <form id="category-form">
+
+                        <div class="mb-3">
+                            <input type="text" 
+                            class="form-control"
+                             id="category-name"
+                             placeholder="Category name">
+                        </div>
+                        <button class="btn btn-primary w-100" type="submit">
+                            Save category
+                        </button>
+                    </form>
+                </div>
+            </div>        
+        </div>
+    </div>
+
 </body>
 </html>

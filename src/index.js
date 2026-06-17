@@ -54,7 +54,6 @@ app.on('ready', ()=>{
         contextIsolation:false
      }   
     })
-    console.log("APP READY")
 });
 
 
@@ -67,6 +66,15 @@ ipcMain.handle('categories:get-all',()=>{
 ipcMain.handle('products:get-all',()=>{
     return getProducts();
 })
+
+ipcMain.on(
+    'category:new',(e, name)=>{
+        createCategory(name);
+        mainWindow.webContents.send(
+            'category:created'
+        );
+    }
+);
 
 const TemplateMenu = [
     {

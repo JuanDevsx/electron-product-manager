@@ -1,27 +1,28 @@
 const {ipcRenderer} = require('electron');
+const { getCategories } = require('../database/database');
     //    Variabbles
         const mainContent = document.querySelector('#main-content');
         const navProducts = document.querySelector("#nav-products");
         const navCategories = document.querySelector("#nav-categories");
-        // Funciones de vista
-        function showNewProductsViewForm(){
+        // Funciones de vista principal
+        function showProductsView(){
             mainContent.innerHTML=`
             <div class="d-flex justify-content-between align-items-center mb-4">      
                 <h2>Products</h2>
                 <button class="btn btn-primary mb-3">
-                    New product
+                    New product1
                     </button> 
                     </div>
                 <div class="row" id="products"></div>
                 `;        
         }
-        showNewProductsViewForm()
+        showProductsView()
 
         function getProductContainer(){
             return document.querySelector('#products');
         }
 
-         // Tempt function categories
+         // Tempt function listing categories
         async function loadCategories(){
             const categories=
                 await ipcRenderer.invoke(
@@ -44,7 +45,7 @@ const {ipcRenderer} = require('electron');
                     </div>
                 </div>`
             });
-                console.log(categories);
+                
         }
         
         async function loadProducts(){
@@ -71,8 +72,8 @@ const {ipcRenderer} = require('electron');
                 `
             });
         }
-
-        function showNewCategoriesViewForm(){
+        //Boton crear nueva categoria
+        function showCategoriesView(){
             mainContent.innerHTML =`
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>Categories</h2>
@@ -85,41 +86,48 @@ const {ipcRenderer} = require('electron');
             document
                 .querySelector('#btn-new-category')
                 .addEventListener('click',()=>{
-                    ipcRenderer.send(
-                        'category:open-window'
-                    );
+                    openCategoriesModal();
                 });
             loadCategories();
         }
-        function showProducts(){
-            mainContent.innerHTML =`
-            <div class="d-flex justify-content-between aling-items-center mb-4">
-                <h2>Products</h2>
-                <button id="btn-new-product" class="btn btn-primary mb-3">
-                    New product
-                </button>
-            </div>
-                <div id="products-container"></div>        
-            `;
-            document
-            .querySelector('#btn-new-product')
-            .addEventListener('click',()=>{
-                ipcRederer.send(
-                    'product:open-window'
-                );
-            });
-            loadProducts();
+        // funcion vista formulario
+        function openCategoriesModal(){
+           const modalElement = document.querySelector("#categoryModal")
+           
+           const modal = new bootstrap.Modal(modalElement);
+
+           modal.show();
         }
-        // Eventos
+
+        // Eventos click
         navProducts.addEventListener('click',(e)=>{
             e.preventDefault();
             //vista
-            showNewProductsViewForm();
+            showProductsView();
         });
         navCategories.addEventListener('click',(e)=>{
             e.preventDefault();
-            showNewCategoriesViewForm();
+            showCategoriesView();
         });
+        
+        // Eventos modal
+        const categoryForm = document.querySelector('#category-form');
+        categoryForm.addEventListener('submit',(e)=>{
+            e.preventDefault();
+            const categoryName = document.querySelector('#category-name').value;
+            console.log(categoryName)
+                ipcRenderer.send('category:new', categoryName)
+                // console.log(getCategories())
+
+        })
+        
+        ipcRenderer.on('category:created',()=>{
+            const modalElement = document.querySelector('#categoryModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+            document.querySelector('#category-name').value='';
+            loadCategories();
+        })
 
         ipcRenderer.on('product:new',(e, newProduct)=>{
             const newProductTemplate = `
