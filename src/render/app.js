@@ -4,17 +4,22 @@ const { getCategories } = require('../database/database');
         const mainContent = document.querySelector('#main-content');
         const navProducts = document.querySelector("#nav-products");
         const navCategories = document.querySelector("#nav-categories");
-        // Funciones de vista principal
+        // Funcion de vista principal (productos)
         function showProductsView(){
             mainContent.innerHTML=`
             <div class="d-flex justify-content-between align-items-center mb-4">      
                 <h2>Products</h2>
-                <button class="btn btn-primary mb-3">
-                    New product1
+                <button id="btn-new-product" class="btn btn-primary mb-3">
+                    New product
                     </button> 
                     </div>
                 <div class="row" id="products"></div>
-                `;        
+                `;
+                 document
+                 .querySelector('#btn-new-product')
+                 .addEventListener('click',()=>{
+                    openProductModal()
+                 })       
         }
         showProductsView()
 
@@ -72,7 +77,7 @@ const { getCategories } = require('../database/database');
                 `
             });
         }
-        //Boton crear nueva categoria
+        //Funcion vista categorias
         function showCategoriesView(){
             mainContent.innerHTML =`
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -90,7 +95,7 @@ const { getCategories } = require('../database/database');
                 });
             loadCategories();
         }
-        // funcion vista formulario
+        // funcion vista formulario categoria
         function openCategoriesModal(){
            const modalElement = document.querySelector("#categoryModal")
            
@@ -98,6 +103,15 @@ const { getCategories } = require('../database/database');
 
            modal.show();
         }
+        //funcion vista formulario producto
+        function openProductModal(){
+            const modalElement = document.querySelector('#productModal')
+            
+            const modal = new bootstrap.Modal(modalElement);
+            
+            modal.show();
+        }
+
 
         // Eventos click
         navProducts.addEventListener('click',(e)=>{
@@ -115,9 +129,17 @@ const { getCategories } = require('../database/database');
         categoryForm.addEventListener('submit',(e)=>{
             e.preventDefault();
             const categoryName = document.querySelector('#category-name').value;
-            console.log(categoryName)
+            // console.log(categoryName)
                 ipcRenderer.send('category:new', categoryName)
-                // console.log(getCategories())
+
+        })
+        
+        const productForm = document.querySelector('#product-form');
+        productForm.addEventListener('submit',(e)=>{
+            e.preventDefault();
+            const productName = document.querySelector('#product-name').value;
+            console.log(productName);
+            ipcRenderer.send('product:new', productName)
 
         })
         

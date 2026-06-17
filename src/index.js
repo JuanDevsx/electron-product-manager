@@ -76,6 +76,15 @@ ipcMain.on(
     }
 );
 
+ipcMain.on(
+    'product:new',(e, name)=>{
+        createProduct(name);
+        mainWindow.webContents.send(
+            'product:created'
+        );    
+    }
+);
+
 const TemplateMenu = [
     {
         label:'file',
