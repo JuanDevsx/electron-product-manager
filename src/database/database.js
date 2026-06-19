@@ -28,10 +28,7 @@ function createDatabase(){
 
 `);
 return db;
-
-
 }
-
 
 function createCategory(name){
     return db.prepare(`
@@ -46,7 +43,7 @@ function getCategories(){
         ORDER BY name
         `).all();
 }
-function createProduct(){
+function createProduct(name,description,price,stock,category_id){
     return db.prepare(`
         INSERT INTO products(name,description,price,stock,category_id)
         VALUES(?,?,?,?,?)

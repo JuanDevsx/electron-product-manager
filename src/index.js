@@ -63,6 +63,7 @@ ipcMain.handle('categories:get-all',()=>{
     return getCategories();
 })
 
+
 ipcMain.handle('products:get-all',()=>{
     return getProducts();
 })
@@ -77,8 +78,8 @@ ipcMain.on(
 );
 
 ipcMain.on(
-    'product:new',(e, name)=>{
-        createProduct(name);
+    'product:new',(e, name,description,price,stock,category)=>{
+        createProduct(name,description,price,stock,category);
         mainWindow.webContents.send(
             'product:created'
         );    

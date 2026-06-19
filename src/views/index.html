@@ -40,17 +40,20 @@
     
     <div id="productModal" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-sm">
-            <div class="modal-header">
-                <div class="modal-content">
-
+             <div class="modal-content">       
+                <div class="modal-header">
+                
                 <h5 class="modal-title">
                     New product
                 </h5>
 
                 <button type="button"
                 class="btn-close"
-                data-bs-dimiss="modal">
+                data-bs-dismiss="modal">
                 </button>
+
+                </div>
+
                 <div class="modal-body">
                 <form id="product-form">
                     <div class="mb-3">
@@ -58,6 +61,23 @@
                          class="form-control"
                          id="product-name"
                          placeholder="Product name">
+
+                         <input type="text"
+                         class="form-control"
+                         id="product-description"
+                         placeholder="Product-description">
+
+                         <input type="number"
+                         class="form-control"
+                         id="product-price"
+                         placeholder="Price product $">
+
+                         <input type="number"
+                         class="form-control"
+                         id="product-stock"
+                         placeholder="Stock">
+
+                         <select class="form-select"  id="product-category"></select>
                     </div>
                     <button class="btn btn-primary w-100" type="submit">
                         Save product

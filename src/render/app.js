@@ -103,14 +103,40 @@ const { getCategories } = require('../database/database');
 
            modal.show();
         }
+         //Carga de categorias para productos
+        async function loadCategoriesForProduct(){
+            const categories = await ipcRenderer.invoke(
+                'categories:get-all'
+            );
+            const selectCategory = document.querySelector(
+                '#product-category'
+            );
+            selectCategory.innerHTML = 
+            `<option value="">
+                Selected category
+                </option>
+            `;
+
+            categories.forEach(category=>{
+                selectCategory.innerHTML +=`
+                <option value="${category.id}">
+                ${category.name}
+                </option>
+                `;
+            });
+            console.log(categories)
+        }
         //funcion vista formulario producto
         function openProductModal(){
+            loadCategoriesForProduct()
             const modalElement = document.querySelector('#productModal')
             
             const modal = new bootstrap.Modal(modalElement);
             
             modal.show();
         }
+       
+
 
 
         // Eventos click
@@ -138,8 +164,12 @@ const { getCategories } = require('../database/database');
         productForm.addEventListener('submit',(e)=>{
             e.preventDefault();
             const productName = document.querySelector('#product-name').value;
-            console.log(productName);
-            ipcRenderer.send('product:new', productName)
+            const productDescription = document.querySelector('#product-description').value;
+            const productPrice = document.querySelector('#product-price').value;
+            const productStock = document.querySelector('#product-stock').value;
+            const productCategory = document.querySelector('#product-category').value;
+            console.log(productName,productDescription,productPrice,productStock,productCategory);
+            ipcRenderer.send('product:new', productName, productDescription, productPrice, productStock, productCategory)
 
         })
         
@@ -190,4 +220,3 @@ const { getCategories } = require('../database/database');
             products.innerHTML='';
         })
        
-        
