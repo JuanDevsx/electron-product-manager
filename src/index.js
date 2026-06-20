@@ -123,20 +123,4 @@ if(process.platform === 'darwin'){
     });
 }
 
-if (process.env.NODE_ENV !== 'production'){
-    TemplateMenu.push({
-        label: 'DevTools',
-        submenu:[
-            {
-                label: 'Show/Hide DevTools',
-                acelerator:"Ctrl+D",
-                click(item, focusedWindow){
-                    focusedWindow.toggleDevTools();
-                }
-            },{
-               role:'reload' 
-            }
-        ]
-    })
-} 
     

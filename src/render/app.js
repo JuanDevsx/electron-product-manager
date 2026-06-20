@@ -4,24 +4,7 @@ const { getCategories } = require('../database/database');
         const mainContent = document.querySelector('#main-content');
         const navProducts = document.querySelector("#nav-products");
         const navCategories = document.querySelector("#nav-categories");
-        // Funcion de vista principal (productos)
-        function showProductsView(){
-            mainContent.innerHTML=`
-            <div class="d-flex justify-content-between align-items-center mb-4">      
-                <h2>Products</h2>
-                <button id="btn-new-product" class="btn btn-primary mb-3">
-                    New product
-                    </button> 
-                    </div>
-                <div class="row" id="products"></div>
-                `;
-                 document
-                 .querySelector('#btn-new-product')
-                 .addEventListener('click',()=>{
-                    openProductModal()
-                 })       
-        }
-        showProductsView()
+       
 
         function getProductContainer(){
             return document.querySelector('#products');
@@ -58,19 +41,22 @@ const { getCategories } = require('../database/database');
             await ipcRenderer.invoke(
                 'products:get-all'
             );
-            const container = 
-            document.querySelector(
+        const container = 
+                document.querySelector(
                 "#products-container"
             );
-            container.innerHTML ='';
+        container.innerHTML ='';
 
-            products.forEach(product=>{
+        products.forEach(product=>{
                 container.innerHTML +=`
                 <div class="card mb-2">
                     <div class="card-body">
-                        <h4>Product</h4>
                         <h5 class"m-0">
                         ${product.name}
+                        ${product.desc}
+                        ${product.price}
+                        ${product.stock}
+                        ${product.category_id}
                         </h5>
                     </div>
                 </div>    
@@ -135,10 +121,25 @@ const { getCategories } = require('../database/database');
             
             modal.show();
         }
-       
 
-
-
+         // Funcion de vista principal (productos)
+        function showProductsView(){
+            mainContent.innerHTML=`
+            <div class="d-flex justify-content-between align-items-center mb-4">      
+                <h2>Products</h2>
+                <button id="btn-new-product" class="btn btn-primary mb-3">
+                    New product
+                    </button> 
+                    </div>
+                <div class="row" id="products-container"></div>
+                `;
+                 document
+                 .querySelector('#btn-new-product')
+                 .addEventListener('click',()=>{
+                    openProductModal()
+                 })
+                loadProducts()
+        }
         // Eventos click
         navProducts.addEventListener('click',(e)=>{
             e.preventDefault();
@@ -179,6 +180,18 @@ const { getCategories } = require('../database/database');
             modal.hide();
             document.querySelector('#category-name').value='';
             loadCategories();
+        })
+
+        ipcRenderer.on('product:created',()=>{
+            const modalElement= document.querySelector('#productModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+            document.querySelector('#product-name').value='';
+            document.querySelector('#product-description').value='';
+            document.querySelector('#product-price').value='';
+            document.querySelector('#product-stock').value='';
+            document.querySelector('#product-category').value='';
+            loadProducts();
         })
 
         ipcRenderer.on('product:new',(e, newProduct)=>{
