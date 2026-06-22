@@ -55,10 +55,28 @@ function getProducts(){
         FROM products
         ORDER BY id `).all();
 }
+function deleteProduct(id){
+    const sql=`
+    DELETE FROM products
+    WHERE id = ?;
+    `;
+    db.prepare(sql).run(id);
+}
+
+function deleteCategory(id){
+    const sql=`
+    DELETE FROM categories
+    WHERE id = ?
+    `;
+     db.prepare(sql).run(id);
+}
+
 module.exports ={
     createDatabase,
     createCategory,
     getCategories,
     createProduct,
+    deleteProduct,
+    deleteCategory,
     getProducts
 };

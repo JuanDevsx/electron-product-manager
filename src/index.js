@@ -8,7 +8,9 @@ const{
     createCategory,
     createProduct,
     getCategories,
-    getProducts
+    getProducts,
+    deleteProduct,
+    deleteCategory
 } = require('./database/database')
 
 // if (!app.isPackaged){
@@ -29,6 +31,7 @@ let db;
 app.on('ready', () => {
    db = createDatabase();
    console.log(getCategories());
+//    console.log(getProducts());
 
     mainWindow = new BrowserWindow({
     webPreferences:{
@@ -56,9 +59,6 @@ app.on('ready', ()=>{
     })
 });
 
-
-   
-   
 ipcMain.handle('categories:get-all',()=>{
     return getCategories();
 })
@@ -67,6 +67,7 @@ ipcMain.handle('categories:get-all',()=>{
 ipcMain.handle('products:get-all',()=>{
     return getProducts();
 })
+
 
 ipcMain.on(
     'category:new',(e, name)=>{
@@ -85,6 +86,23 @@ ipcMain.on(
         );    
     }
 );
+
+ipcMain.on(
+    'product:delete',(e,id)=>{
+        deleteProduct(id);
+        mainWindow.webContents.send(
+            'product:deleted'
+        );
+    }
+)
+ipcMain.on(
+    'category:delete',(e,id)=>{
+        deleteCategory(id);
+        mainWindow.webContents.send(
+            'category:deleted'
+        );
+    }
+)
 
 const TemplateMenu = [
     {

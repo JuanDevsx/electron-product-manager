@@ -58,22 +58,22 @@
                 <form id="product-form">
                     <div class="mb-3">
                         <input type="text"
-                         class="form-control"
+                         class="form-control mb-3"
                          id="product-name"
                          placeholder="Product name">
 
                          <input type="text"
-                         class="form-control"
+                         class="form-control mb-3"
                          id="product-description"
                          placeholder="Product-description">
 
                          <input type="number"
-                         class="form-control"
+                         class="form-control mb-3"
                          id="product-price"
                          placeholder="Price product $">
 
                          <input type="number"
-                         class="form-control"
+                         class="form-control mb-3"
                          id="product-stock"
                          placeholder="Stock">
 
@@ -84,7 +84,7 @@
                     </button>
                 </form>
                 </div>
-            </div>
+            </div> 
         </div>
     </div>
 
@@ -121,6 +121,58 @@
         </div>
     </div>
 
+    <div id="deleteProductModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                    ¿Estas seguro de eliminar el producto?
+                    </h5>
+                        
+                    <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+                    <div class="modal-body text-center">
+                        ! Esta acción no se puede deshacer.
+                    </div>
+                        <div class="modal-footer">
+                            <button id="confirm-delete-product" class="btn btn-outline-danger  mb-3" >Eliminar</button>
+                            <button class="btn btn-primary  mb-3" type="submit">Cancelar</button>
+                        </div>            
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteCategoryModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        ¿Estas seguro de eliminar la categoria?
+                    </h5>
+
+                    <button type="button" 
+                    class="btn-close" 
+                    data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body text-center">
+                    ! Esta acción no se puede deshacer
+                </div>
+                    <div class="modal-footer">
+                        <button id="confirm-delete-category" class="btn btn-outline-danger mb-3">Eliminar</button>
+                        <button id="" class="btn btn.primary mb-3" type="submit">Cancelar</button>
+                    </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

@@ -4,7 +4,8 @@ const { getCategories } = require('../database/database');
         const mainContent = document.querySelector('#main-content');
         const navProducts = document.querySelector("#nav-products");
         const navCategories = document.querySelector("#nav-categories");
-       
+        let productId = null;
+        let categoryId = null;
 
         function getProductContainer(){
             return document.querySelector('#products');
@@ -28,10 +29,22 @@ const { getCategories } = require('../database/database');
                 <div class="card mb-2">
                     <div class="card-body">
                         <h5 class="m-0">
+                        ${category.id}
                         ${category.name}
                         </h5>
+                        <button class="btn-delete-category btn btn-danger 
+                        mb-3" data-id="${category.id}">Delete</button>
                     </div>
                 </div>`
+            });
+            document
+            .querySelectorAll('.btn-delete-category')
+            .forEach(button=>{
+                button.addEventListener('click',(e)=>{
+                    categoryId = e.target.dataset.id;
+
+                    openDeleteCategoryModal();
+                });
             });
                 
         }
@@ -51,17 +64,32 @@ const { getCategories } = require('../database/database');
                 container.innerHTML +=`
                 <div class="card mb-2">
                     <div class="card-body">
-                        <h5 class"m-0">
+                        <h5 class="m-0">
                         ${product.name}
-                        ${product.desc}
+                        ${product.description}
                         ${product.price}
                         ${product.stock}
                         ${product.category_id}
                         </h5>
+                        <button 
+                         class="btn-delete-product btn btn-danger
+                         mb-3" data-id="${product.id}">Delete</button>
                     </div>
                 </div>    
-                `
+                `;
+                
             });
+            
+             document
+            .querySelectorAll('.btn-delete-product')
+            .forEach( button=>{
+                button.addEventListener('click',(e)=>{
+                    productId = e.target.dataset.id;
+
+                    openDeleteProductModal();
+                });
+            
+             });
         }
         //Funcion vista categorias
         function showCategoriesView(){
@@ -81,7 +109,7 @@ const { getCategories } = require('../database/database');
                 });
             loadCategories();
         }
-        // funcion vista formulario categoria
+        
         function openCategoriesModal(){
            const modalElement = document.querySelector("#categoryModal")
            
@@ -89,6 +117,32 @@ const { getCategories } = require('../database/database');
 
            modal.show();
         }
+
+        function openProductModal(){
+            loadCategoriesForProduct()
+            const modalElement = document.querySelector('#productModal')
+            
+            const modal = new bootstrap.Modal(modalElement);
+            
+            modal.show();
+        }
+
+        function openDeleteProductModal(){
+            const modalElement = document.querySelector('#deleteProductModal')
+
+            const modal = new bootstrap.Modal(modalElement);
+
+            modal.show();   
+        }
+
+        function openDeleteCategoryModal(){
+            const modalElement = document.querySelector('#deleteCategoryModal')
+
+            const modal = new bootstrap.Modal(modalElement);
+
+            modal.show();
+        } 
+
          //Carga de categorias para productos
         async function loadCategoriesForProduct(){
             const categories = await ipcRenderer.invoke(
@@ -111,15 +165,6 @@ const { getCategories } = require('../database/database');
                 `;
             });
             console.log(categories)
-        }
-        //funcion vista formulario producto
-        function openProductModal(){
-            loadCategoriesForProduct()
-            const modalElement = document.querySelector('#productModal')
-            
-            const modal = new bootstrap.Modal(modalElement);
-            
-            modal.show();
         }
 
          // Funcion de vista principal (productos)
@@ -151,15 +196,24 @@ const { getCategories } = require('../database/database');
             showCategoriesView();
         });
         
-        // Eventos modal
+        // Eventos envio modal
         const categoryForm = document.querySelector('#category-form');
         categoryForm.addEventListener('submit',(e)=>{
             e.preventDefault();
             const categoryName = document.querySelector('#category-name').value;
-            // console.log(categoryName)
                 ipcRenderer.send('category:new', categoryName)
 
-        })
+        });
+
+        const deleteProduct = document.querySelector('#confirm-delete-product');
+        deleteProduct.addEventListener('click',()=>{
+                ipcRenderer.send('product:delete',productId)
+        });
+
+        const deleteCategory = document.querySelector('#confirm-delete-category');
+        deleteCategory.addEventListener('click',()=>{
+            ipcRenderer.send('category:delete',categoryId)
+        });
         
         const productForm = document.querySelector('#product-form');
         productForm.addEventListener('submit',(e)=>{
@@ -194,42 +248,18 @@ const { getCategories } = require('../database/database');
             loadProducts();
         })
 
-        ipcRenderer.on('product:new',(e, newProduct)=>{
-            const newProductTemplate = `
-            <div class="col-md-4">
-                <div class="card h-100 shadow-lg border border-2">
-                    <div class="card-header bg-white border-bottom border-2 border py-3 text-center">
-                     <h5 class="card-title text-center m-0" style="text-transform:none;">
-                        ${newProduct.name}
-                        </h5>
-                    </div>
-                        <div class="card-header bg-white border-bottom border-2 border py-3 text-center">
-                        ${newProduct.description}
-                        </div> 
-                            <div class="card-header bg-white border-bottom border-2 border py-3 text-center">
-                                <h4 class="fw-bold text-center">
-                        ${newProduct.price}
-                                </h4>
-                            </div> 
-                            <div class="card-footer bg-white border-top border-2 border py-3 text-center">
-                        <button class="btn btn-danger btn-sm px-4">
-                            DELETE
-                            </button>
-                    </div>
-                </div>    
-            </div>        
-            `;
-            getProductsContainer().innerHTML+= newProductTemplate;
-            const btns = document.querySelectorAll('.btn.btn-danger');
-            btns.forEach(btn =>{
-                btn.addEventListener('click', e =>{
-                    e.target.parentElement.parentElement.parentElement.remove();
-                });
-            });
-        });
-        
-        ipcRenderer.on("products:remove-all", (e) =>{
-            console.log("Remove-all")
-            products.innerHTML='';
+        ipcRenderer.on('product:deleted',()=>{
+            const modalElement = document.querySelector('#deleteProductModal')
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+            loadProducts();
         })
-       
+
+        ipcRenderer.on('category:deleted',()=>{
+            const modalElement= document.querySelector('#deleteCategoryModal')
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            console.log('Delete category')
+            modal.hide();
+            loadCategories();
+        })
+
