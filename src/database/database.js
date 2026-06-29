@@ -31,10 +31,14 @@ return db;
 }
 
 function createCategory(name){
-    return db.prepare(`
+    db.prepare(`
         INSERT INTO categories(name)
         VALUES(?)
         `).run(name);
+    return{
+        success:true,
+        code:"CATEGORY_CREATED"
+    }    
 }
 function getCategories(){
     return db.prepare(`
@@ -44,10 +48,14 @@ function getCategories(){
         `).all();
 }
 function createProduct(name,description,price,stock,category_id){
-    return db.prepare(`
+    db.prepare(`
         INSERT INTO products(name,description,price,stock,category_id)
         VALUES(?,?,?,?,?)
         `).run(name,description,price,stock,category_id);
+        return{
+            success:true,
+            code:"PRODUCT_CREATED"
+        }
 }
 function getProducts(){
     return db.prepare(`
@@ -61,15 +69,47 @@ function deleteProduct(id){
     WHERE id = ?;
     `;
     db.prepare(sql).run(id);
+    return{
+        success:true,
+        code:"PRODUCT_DELETED"
+    }
+}
+
+function CategoryHasProducts(category_id){
+    const sql =`
+    SELECT *
+    FROM products
+    WHERE category_id =?
+    LIMIT 1;
+    `;
+
+    const result = db.prepare(sql).get(category_id);
+
+    return result !== undefined;
 }
 
 function deleteCategory(id){
+    
+    if(CategoryHasProducts(id)){
+        return{
+            success: false,
+            code: "CATEGORY_IN_USE",
+            };    
+    }
+    
     const sql=`
     DELETE FROM categories
     WHERE id = ?
     `;
      db.prepare(sql).run(id);
+
+     return{
+        success:true,
+        code:'CATEGORY_DELETED'
+     };
 }
+
+
 
 module.exports ={
     createDatabase,

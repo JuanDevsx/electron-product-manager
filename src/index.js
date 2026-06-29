@@ -25,13 +25,11 @@ if(process.env.NODE_ENV !== 'production'){
 
     })
 }
-
+let result;
 let mainWindow;
 let db;
 app.on('ready', () => {
    db = createDatabase();
-   console.log(getCategories());
-//    console.log(getProducts());
 
     mainWindow = new BrowserWindow({
     webPreferences:{
@@ -71,35 +69,40 @@ ipcMain.handle('products:get-all',()=>{
 
 ipcMain.on(
     'category:new',(e, name)=>{
-        createCategory(name);
+        const result = createCategory(name);
+        
         mainWindow.webContents.send(
-            'category:created'
+            'category:created',
+            result
         );
     }
 );
 
 ipcMain.on(
     'product:new',(e, name,description,price,stock,category)=>{
-        createProduct(name,description,price,stock,category);
+      const result = createProduct(name,description,price,stock,category);
         mainWindow.webContents.send(
-            'product:created'
+            'product:created',
+            result
         );    
     }
 );
 
 ipcMain.on(
     'product:delete',(e,id)=>{
-        deleteProduct(id);
+      result =  deleteProduct(id);
         mainWindow.webContents.send(
-            'product:deleted'
+            'product:deleted',
+            result
         );
     }
 )
 ipcMain.on(
     'category:delete',(e,id)=>{
-        deleteCategory(id);
+        const result = deleteCategory(id);
         mainWindow.webContents.send(
-            'category:deleted'
+            'category:deleted',
+            result
         );
     }
 )

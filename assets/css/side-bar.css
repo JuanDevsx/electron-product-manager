@@ -1,8 +1,15 @@
 #sidebar{
     width: 250px;
     min-width: 250px;
+    background-color: #181735 !important;
+    display: flex;
+    transition: transform .3s ease;
 }
 .nav-link:hover{
     background-color: rgba(255,255,255,.1);
     border-radius: 5px,
+}
+
+h4{
+color: rgb(226, 245, 245) !important;
 }

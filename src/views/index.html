@@ -7,6 +7,7 @@
     <script src="../../assets/js/bootstrap.bundle.min.js"defer></script>
     <script src="../../src/render/app.js"defer></script>
     <link rel="stylesheet" href="../../assets/css/side-bar.css">
+    <link rel="stylesheet" href="../../assets/css/mainStyle.css">
     <link rel="stylesheet" href="../../assets/css/bootstrap.css">
 </head>
 <body>
@@ -173,6 +174,31 @@
             </div>
         </div>
     </div>
+
+   <div class="toast-container position-fixed top-0 start-50 traslate-middle-x p-3">
+
+    <div id="appToast"
+         class="toast"
+         role="alert">
+
+        <div class="toast-header">
+            <strong class="me-auto">Inventory</strong>
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="toast">
+            </button>
+
+        </div>
+
+        <div class="toast-body" id="toast-message">
+            Message
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>

@@ -25,17 +25,21 @@ const { getCategories } = require('../database/database');
             container.innerHTML ='';
             
             categories.forEach(category=>{
-                container.innerHTML +=`
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <h5 class="m-0">
-                        ${category.id}
-                        ${category.name}
-                        </h5>
-                        <button class="btn-delete-category btn btn-danger 
-                        mb-3" data-id="${category.id}">Delete</button>
-                    </div>
-                </div>`
+           container.innerHTML += `
+    <div class="card mb-2 mx-auto" style="width: 22rem;">
+        <div class="card-body text-center">
+
+            <h5 class="fw-bolder">${category.name}</h5>
+
+            <button 
+                class="btn-delete-category btn btn-outline-danger mt-3"
+                data-id="${category.id}">
+                Delete
+            </button>
+
+        </div>
+    </div>
+`;
             });
             document
             .querySelectorAll('.btn-delete-category')
@@ -62,20 +66,32 @@ const { getCategories } = require('../database/database');
 
         products.forEach(product=>{
                 container.innerHTML +=`
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <h5 class="m-0">
-                        ${product.name}
-                        ${product.description}
-                        ${product.price}
-                        ${product.stock}
-                        ${product.category_id}
-                        </h5>
-                        <button 
-                         class="btn-delete-product btn btn-danger
-                         mb-3" data-id="${product.id}">Delete</button>
-                    </div>
-                </div>    
+            
+            <div class="card mb-2 mx-auto" style="width: 22rem;">
+                <div class="card-body text-center">
+
+                <h5 class="fw-bolder">${product.name}</h5>
+
+                <div class="fw-bold">Description:</div>
+                <div>${product.description}</div>
+
+                <div class="fw-bold mt-2">Price:</div>
+                <div>${product.price}</div>
+
+                <div class="fw-bold mt-2">Stock:</div>
+                <div>${product.stock}</div>
+
+                <div class="fw-bold mt-2">Category:</div>
+                <div>${product.category_name}</div>
+
+                <button 
+                    class="btn-delete-product btn btn-outline-danger mt-3"
+                    data-id="${product.id}">
+                    Delete
+                </button>
+
+                </div>
+            </div>        
                 `;
                 
             });
@@ -91,6 +107,7 @@ const { getCategories } = require('../database/database');
             
              });
         }
+
         //Funcion vista categorias
         function showCategoriesView(){
             mainContent.innerHTML =`
@@ -185,6 +202,18 @@ const { getCategories } = require('../database/database');
                  })
                 loadProducts()
         }
+
+        function showToast(message){
+            console.log('Toast:', message)
+            const toastElement = document.querySelector('#appToast');
+            const toastMessage = document.querySelector('#toast-message');
+
+            toastMessage.textContent = message;
+
+            const toast = new bootstrap.Toast(toastElement);
+
+            toast.show();
+        }
         // Eventos click
         navProducts.addEventListener('click',(e)=>{
             e.preventDefault();
@@ -201,9 +230,16 @@ const { getCategories } = require('../database/database');
         categoryForm.addEventListener('submit',(e)=>{
             e.preventDefault();
             const categoryName = document.querySelector('#category-name').value;
+                if(categoryName.trim()===''){
+                    showToast('category must not be empty');
+                    return;
+                }    
+
                 ipcRenderer.send('category:new', categoryName)
 
         });
+
+      
 
         const deleteProduct = document.querySelector('#confirm-delete-product');
         deleteProduct.addEventListener('click',()=>{
@@ -213,6 +249,7 @@ const { getCategories } = require('../database/database');
         const deleteCategory = document.querySelector('#confirm-delete-category');
         deleteCategory.addEventListener('click',()=>{
             ipcRenderer.send('category:delete',categoryId)
+            
         });
         
         const productForm = document.querySelector('#product-form');
@@ -223,43 +260,84 @@ const { getCategories } = require('../database/database');
             const productPrice = document.querySelector('#product-price').value;
             const productStock = document.querySelector('#product-stock').value;
             const productCategory = document.querySelector('#product-category').value;
-            console.log(productName,productDescription,productPrice,productStock,productCategory);
+
+            const product ={
+                productName,
+                productDescription,
+                productPrice,
+                productStock,
+                productCategory
+            };
+            const hasEmptyField = Object.values(product).some(value => 
+                String(value).trim()===''
+            );
+            if (hasEmptyField){
+                showToast('All fields are required');
+                return;
+            }
+                
             ipcRenderer.send('product:new', productName, productDescription, productPrice, productStock, productCategory)
+            
 
         })
         
-        ipcRenderer.on('category:created',()=>{
+        ipcRenderer.on('category:created',(e, result)=>{
             const modalElement = document.querySelector('#categoryModal');
             const modal = bootstrap.Modal.getInstance(modalElement);
-            modal.hide();
-            document.querySelector('#category-name').value='';
-            loadCategories();
+            if(result.code==="CATEGORY_CREATED"){
+                modal.hide();
+                showToast("Category was created successfully");
+                document.querySelector('#category-name').value='';
+                loadCategories();
+                return;
+            }
+           
         })
 
-        ipcRenderer.on('product:created',()=>{
+        ipcRenderer.on('product:created',(e, result)=>{
             const modalElement= document.querySelector('#productModal');
             const modal = bootstrap.Modal.getInstance(modalElement);
+            if(result.code==="PRODUCT_CREATED"){
             modal.hide();
+            showToast("Product was created successfully");
             document.querySelector('#product-name').value='';
             document.querySelector('#product-description').value='';
             document.querySelector('#product-price').value='';
             document.querySelector('#product-stock').value='';
             document.querySelector('#product-category').value='';
             loadProducts();
+            return;
+            }
+           
         })
 
-        ipcRenderer.on('product:deleted',()=>{
+        ipcRenderer.on('product:deleted',(e, result)=>{
             const modalElement = document.querySelector('#deleteProductModal')
             const modal = bootstrap.Modal.getInstance(modalElement);
+            if(result.code==="PRODUCT_DELETED"){
             modal.hide();
+            showToast("Product deleted succsesfully");
             loadProducts();
+            return;
+            }
         })
 
-        ipcRenderer.on('category:deleted',()=>{
+        ipcRenderer.on('category:deleted',(e, result)=>{
             const modalElement= document.querySelector('#deleteCategoryModal')
             const modal = bootstrap.Modal.getInstance(modalElement);
-            console.log('Delete category')
-            modal.hide();
-            loadCategories();
-        })
+
+            if(result.code ==="CATEGORY_IN_USE"){
+             modal.hide();   
+             showToast("This category has associated products ⚠️.")
+                return;
+            }
+            if(result.code ==="CATEGORY_DELETED"){
+                modal.hide();
+                loadCategories();
+                showToast("Category deleted successfully.");
+                return;
+            }
+
+        });
+
 
